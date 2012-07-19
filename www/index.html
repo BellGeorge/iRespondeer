@@ -1,0 +1,107 @@
+<!--*************************************************************
+ * Authors: Rajitha & Bhaskar
+ * File Name:index.html
+ * Date: 13/07/2012
+ *
+ * 
+ * This file imports all javascript and css files.
+ *************************************************************-->
+<!DOCTYPE html >
+<!--html starting-->
+<html>
+    <!--head starting-->
+        <head>
+            <!--title declaration-->
+            <title>iResponder</title>
+            
+            <!-- meta tags for mobile app width fixing  -->
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="viewport" content="initial-scale=1.0" />
+            <meta name="viewport" content="maximum-scale=1.0" />
+            <meta name="viewport" content="user-scalable=no" />
+            <meta name="viewport" content="width=device-width" />
+              <!--  CSS Files-->
+            <link href="css/jquery.mobile-1.0a3.min.css" rel="stylesheet" type="text/css"/>
+            <link href="css/custom.css" rel="stylesheet" type="text/css"/>
+            <link href="css/main.css" rel="stylesheet" type="text/css"/>
+            <!--  JS files -->
+            <script src="js/jquery-1.5.min.js" type="text/javascript"></script>
+            <script src="js/jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+            <script src="js/phonegap-1.4.1.js" type="text/javascript"></script>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script src="js/ChildBrowser.js" type="text/javascript"></script>
+            <script src="js/FBConnect.js" type="text/javascript"></script>
+            
+            <!--  CSS for scrolling -->
+            <link type="text/css" href="css/jquery.mobile.scrollview.css"
+            rel="stylesheet" />
+            
+            <link rel="stylesheet" href="css/scrollview.css" />
+            <!--  JS for scrolling -->
+            <script type="text/javascript" src="js/easing.js"></script>
+            <script type="text/javascript" src="js/scrollview.js"></script>
+            <script type="text/javascript" src="js/jquery.mobile.scrollview.js"></script>
+        
+    </head>
+    <!-- head ending -->
+    
+    <!-- body starting -->
+    <body>
+        <!-- Page Declaration -->
+        <div data-role="page" id="index_page" >
+            <!-- Custom CSS -->
+            <style>
+                body {
+                    background: url(images/bg.jpg);
+                    background-repeat:repeat-y;
+                    background-position:center center;
+                    background-attachment:scroll;
+                    background-size:100% 100%;
+                }
+                .ui-page {
+                    background: url(images/bg.jpg);
+                }
+                .ui-content{
+                    background: url(images/bg.jpg);
+                }
+                
+                </style>
+              <!-- Custom CSS ending-->
+           <!-- Content Starting -->
+            <div data-role="content">
+                <div class="login_bg">
+                    <img src="images/fbconnect.png" width="223" height="31" onclick="facebookLogin()"><br>
+                    <img src="images/troubleshooterlogin.png" width="223" height="31" onclick="engineerLogin()">
+                </div>
+            </div>
+            <!-- Content Ending -->
+             <!-- Custom JS -->
+            <script type="text/javascript">
+                //Login as troubleshooter button action implements here
+                function engineerLogin(){
+                    
+                    $.mobile.changePage("engineerslogin.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    
+                }
+               
+                
+                </script>
+
+            
+            <script type="text/javascript">
+                //when page appears what will be done will implements here
+                $("#index_page").bind('pageshow', function (event, ui) {
+                                      
+                                      }); 
+                </script> 
+            <!-- end of custom JS-->
+          
+        </div><!--Page End-->
+    </body><!--Body End-->
+</html><!--Html End-->
+

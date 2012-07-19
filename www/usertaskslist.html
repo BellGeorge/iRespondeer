@@ -1,0 +1,148 @@
+
+<!--*************************************************************
+ * Authors: Rajitha & Bhaskar
+ * File Name:usertaskslist.html
+ * Date: 13/07/2012
+ *
+ * 
+ * This file contains tasklist created by loggen in user.
+ *************************************************************-->
+<!DOCTYPE html >
+<!--html starting-->
+<html>
+    <!--head starting-->
+    <head>
+        <!--title declaration-->
+        <title>User Tasks List</title>
+    </head>
+    <!-- head ending -->
+    <!-- body starting -->
+    <body>
+        <!-- Page Declaration -->
+        <div data-role="page" id="listview_page" >
+            <!-- Custom CSS -->
+            <style>
+                body {
+                    background: url(images/bg.jpg);
+                    background-repeat:repeat-y;
+                    background-position:center center;
+                    background-attachment:scroll;
+                    background-size:100% 100%;
+                }
+                .ui-page {
+                    background: url(images/bg.jpg);
+                }
+                .ui-content{
+                    background: url(images/bg.jpg);
+                }
+                .ui-li-desc {
+                    font-size: 15px;
+                    font-weight: normal;
+                    white-space: nowrap;
+                    margin:5px;
+                }
+                </style>
+            <!-- header declaration-->
+            <div data-role="header" class="header-style">
+               <img src="images/signout.png" class="ui-btn-right" onclick="fbLogOut();"/>
+                <h1><img src="images/logo.png" width="110" height="20"></h1>
+            </div>
+            <!--End of  header declaration -->
+            <!-- Content Starting -->
+            <div data-role="content" style="margin: 0px;padding:5px;">
+                <!-- ul for display user tasks list -->
+                <ul data-role="listview"  id="ul_Reports">
+                    
+                </ul> 
+                
+            </div>
+            <!-- Content Ending -->
+           
+            <!--Custom Java Script -->
+            <script type="text/javascript">
+                
+                //function implements get user tasks list via ajax call
+                function loading()
+                {
+                    //show the loader       
+                    $.mobile.showPageLoadingMsg();
+                    var leadid=sessionStorage.getItem("leadid");
+                    var strUrl=baseurl+'/iresponder/customertaskview.php?leadid='+leadid;
+                    console.log(strUrl);
+                    //ajax calling for retrive user tasks
+                    $.ajax({
+                           
+                           url:strUrl,dataType: 'json',
+                           success: function(data)
+                           {
+                           console.log(data);
+                           //if user does not have records
+                           if(data.records.length==0)
+                           {
+                           var list="";
+                           list='<li  class="list_tasks" data-icon="false" style="padding:0px !important;text-shadow:none"><a class="list_content" style="padding-left:0px !important;color:white;"><p style="white-space:normal;font-family:helvetica"><Strong>No Problems Available</strong></p></a></li>';
+                           
+                           $("#ul_Reports").append(list);
+                           $('#ul_Reports').listview('refresh');  
+                           //hide the loader
+                           $.mobile.hidePageLoadingMsg();
+                           }
+                           //if user have records
+                           else
+                           {
+                           var list = "";
+                           for (var i = 0; i < data.records.length; i++) {
+                           var btnClass="",btn_text="";
+                           
+                         list=list+'<li  class="list_tasks" data-icon="false" style="padding:0px !important;text-shadow:none"><a class="list_content" style="padding-left:0px !important;color:white;"><p style="white-space:normal;font-family:helvetica"><Strong>Task Name:</strong>'+data.records[i].Subject+'</p><p style="white-space:normal;font-family:helvetica"><Strong>Description:</strong>'+data.records[i].Description+'</p><p style="white-space:normal;font-family:helvetica"><Strong>Status:</strong>'+data.records[i].Status+'</p></a></li>';
+                           
+                           //hide the loader
+                           $.mobile.hidePageLoadingMsg();
+                           
+                           }
+                           //append li to ul
+                           $("#ul_Reports").append(list);
+                           //listview refresh
+                           $('#ul_Reports').listview('refresh');  
+                           
+                           
+                           }
+                           
+                           },
+                           //handling error
+                           error:function (jqXHR, textStatus, errorThrown){
+                           //hide the loader
+                           $.mobile.hidePageLoadingMsg();
+                            navigator.notification.alert("Error:"+errorThrown, null, "iResponder", null);
+                           }
+                           });
+                    
+                }
+                //Reportproblem action implements here
+                function reportProblem()
+                {
+                    $.mobile.changePage("reportproblem.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                }
+                
+                //when page appears what will be done will implements here
+                $("#listview_page").bind('pageshow', function (event, ui) {
+                                         //calling loading function
+                                         loading();
+                                         }); 
+                </script> 
+            <!-- end of custom JS-->
+            <!--Footer Declaration-->
+            <!-- Footer Section -->
+            <div data-role="footer" data-position="fixed"  class="footer-style">
+               
+                    <span id="label_load_tasks" onclick="reportProblem();" style="font-size:15px !important;text-shadow:none;color:black;">Report Problem &nbsp;|</span>  &nbsp;
+                    <span  id="label_myIssues" style="font-size:15px !important;text-shadow:none;color:black;">View Problems</span>
+            </div>
+            <!--Footer End-->
+        </div><!--Page End-->
+    </body><!--Body End-->
+</html><!--Html End-->

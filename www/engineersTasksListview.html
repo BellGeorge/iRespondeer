@@ -1,0 +1,426 @@
+<!--*************************************************************
+ * Authors: Rajitha & Bhaskar
+ * File Name:index.html
+ * Date: 13/07/2012
+ *
+ * 
+ *This page to show all pending issues, completed issues and finished issues.
+ *************************************************************-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Engineer Tasks</title>
+</head>
+<body>
+	<!-- Page section Start  -->
+	<div data-role="page" id="page_engineerTasks" data-theme="none">
+		<style>
+			body {
+				background: url(images/bg.jpg);
+				
+			}
+			
+			.ui-page {
+				background: url(images/bg.jpg);
+			}
+			
+			.ui-content {
+				background: url(images/bg.jpg);
+			}
+			
+			a {
+				color: white !important;
+			}
+       </style>
+
+		<!-- Header Section -->
+		<div data-role="header" data-position="fixed" class="header-style">
+			<a data-role="none"></a>
+			<h1>
+				<img src="images/logo.png" width="110" height="20">
+			</h1>
+			<img src="images/signout.png" class="ui-btn-right" onclick="logOut()" />
+		</div>
+
+		<!-- Content Section -->
+		<div data-role="content" style="margin: 0px; padding: 5px;">
+			<ul data-role="listview" id="ul_Reports">
+
+			</ul>
+
+		</div>
+
+		<!-- Footer Section
+		     Below labels are clickable one for latest unaccepted issues  another for accepted and completed tasks.
+		 -->
+		<div data-role="footer" data-position="fixed"
+			style="text-align: center;">
+            
+			<span id="label_load_tasks" onclick="loadTasks();"
+				style="font-size: 15px !important; text-shadow: none; color: black;">Latest
+				Problems &nbsp;|</span> &nbsp; <span onclick="myIssues()"
+				id="label_myIssues"
+				style="font-size: 15px !important; text-shadow: none; color: black;">View
+				Problems </span>
+		</div>
+
+		<style>
+			.ui-li-desc {
+				font-size: 15px;
+				font-weight: normal;
+				white-space: nowrap;
+				margin: 5px;
+			}
+       </style>
+
+
+		<script>
+		
+		    /**
+		    *
+		    *Below method will execute when user tap on logout button and this controle navigates to
+		    *troubleshooter login page.
+		    *
+		    */
+			function logOut() {
+				$.mobile.changePage("engineerslogin.html", {
+					transition : "none",
+					reverse : false,
+					changeHash : false
+				});
+			}
+
+			/**
+			 *  engineerInfo : to hold engineer info
+			 *  allTasks     : To hold alltasks info
+			 */
+			var engineerInfo, allTasks;
+
+			//Page show event called when page loads
+			$("#page_engineerTasks").bind('pageshow', function(event, ui) {
+				engineerInfo = engineerInfoObj;
+				loadTasks();
+			});
+
+			/**
+			 *Below method to load tasks which are not accepted
+			 */
+			function loadTasks() {
+
+				//show the loader           
+				$.mobile.showPageLoadingMsg();
+				/**
+				 *Clearing ul data if exist 
+				 */
+				clearList();
+
+				/***
+				 *footer text selection
+				 */
+				/* $('#label_load_tasks').css('color', 'blue');
+				 $('#label_myIssues').css('color', 'white'); */
+
+				var url = baseurl + '/iresponder/view.php?eid='
+						+ engineerInfo.records[0].Id + '&email='
+						+ engineerInfo.records[0].fields.Email;
+				console.log(url);
+				/**
+				 *AJAX call implementation
+				 *
+				 */
+				$
+						.ajax({
+							url : url,
+							dataType : 'json',
+							success : function(data) {
+								allTasks = data;
+								/**
+								*
+								* Checking result if user have any tasks, if not having any tasks 
+								* below "if" block will execute otherwise else part will execute
+								*
+								*/
+								if (data == 0 || data == null || data.size == 0) {
+									$.mobile.hidePageLoadingMsg();
+									var list = "";
+									list = '<li  class="list_tasks" data-icon="false" style="padding:0px !important;text-shadow:none"><a class="list_content" style="padding-left:0px !important;color:white;"><p style="white-space:normal;font-family:helvetica"><Strong>No Problems Available</strong></p></a></li>';
+									$("#ul_Reports").append(list);
+									$('#ul_Reports').listview('refresh');
+								} else {
+									var list = "";
+                                    
+									/**
+									*Below for loop to iterate customer tasks which are not completed.
+									*
+									*/
+									for ( var i = 0; i < data.records.length; i++) {
+										
+										/**
+										*@variable :"btnClass" to set css for diffeent tasks based on status EX: yello for complete.
+										*@variable :"btn_text" to set button text according to task status.
+										*/
+										var btnClass = "", btn_text = "";
+
+										if (data.records[i].fields.Status == "Open") {
+											btnClass = "submitted red";
+											btn_text = "Accept";
+										} else if (data.records[i].fields.Status == "Accepted") {
+											btnClass = "submitted yellow";
+											btn_text = "Complete";
+										} else {
+											btnClass = "submitted green";
+											btn_text = "Finished";
+										}
+
+										list = list
+												+ '<li data-icon="false" style="padding:0px !important;text-shadow:none" class="list_tasks"><a class="list_content" style="padding-left:0px !important; color:white;" ><p style="white-space:normal;margin-top:0px;padding-top:0px !important"><Strong>Task Name:</strong>'
+												+ data.records[i].fields.Subject
+												+ '</p><p style="white-space:normal;margin-top:0px;padding-top:0px !important"><Strong>Description:</strong>'
+												+ data.records[i].fields.Description
+												+ '</p><p style="text-decoration:none;"><Strong>Contact No:</strong>'
+												+ data.records[i].fields.Contact_NO__c
+												+ '</p><p style="white-space:normal" class="'
+												+ btnClass
+												+ '" onclick="acceptTask('
+												+ i
+												+ ')">'
+												+ btn_text
+												+ '</p><span class="list_img" style="position:absolute;right:20px;top:40%;"><img src="images/arrow.png" width="21" height="21"></span></a></li>';
+
+									}
+
+									$("#ul_Reports").append(list);
+									$.mobile.hidePageLoadingMsg();
+								}
+								$('#ul_Reports').listview('refresh');
+
+							},
+							error : function(jqXHR, textStatus, errorThrown) {
+								//hide the loader
+								$.mobile.hidePageLoadingMsg();
+								navigator.notification
+										.alert("Error:" + errorThrown, null,
+												"iResponder", null);
+							}
+						});
+			}
+
+			/***
+			 *
+			 *Below method will execute when user click on My Issue label in footer
+			 *
+			 */
+			function myIssues() {
+				/***
+				 *
+				 *Clearing ul if exist
+				 */
+				clearList();
+
+				/***
+				 * Footer label selection
+				 */
+				/* $('#label_load_tasks').css('color', 'white');
+				 $('#label_myIssues').css('color', 'blue'); */
+
+				/***
+				 *
+				 *AJAX call Implementation
+				 */
+				$.mobile.showPageLoadingMsg();
+				var url = baseurl + '/iresponder/employerview.php?email='
+						+ engineerInfo.records[0].fields.Email;
+				console.log(url);
+				$
+						.ajax({
+							url : url,
+							dataType : 'json',
+							success : function(data) {
+								allTasks = data;
+								console.log(data);
+								
+								/**
+								*
+								* Checking result if user have any completed or accepted tasks, if not having any tasks 
+								* below "if" block will execute otherwise else part will execute
+								*
+								*/
+								if (data == 0 || data == null || data.size == 0) {
+									//hide the loader
+									$.mobile.hidePageLoadingMsg();
+									var list = "";
+									list = '<li  class="list_tasks" data-icon="false" style="padding:0px !important;text-shadow:none"><a class="list_content" style="padding-left:0px !important;color:white;"><p style="white-space:normal;font-family:helvetica"><Strong>No Problems Available</strong></p></a></li>';
+									$("#ul_Reports").append(list);
+									$('#ul_Reports').listview('refresh');
+								} else {
+
+									var list = "";
+                                    
+									/**
+									*
+									*Below for loop to iterate user tasks
+									*
+									*/
+									for ( var i = 0; i < data.records.length; i++) {
+										
+										/**
+										*@variable :"btnClass" to set css for diffeent tasks based on status EX: yello for complete.
+										*@variable :"btn_text" to set button text according to task status.
+										*@variable : "method_name" to set method for on click and passing clicked li position
+										*/
+										var btnClass = "", btn_text = "", method_name = "completeTask("
+												+ i + ")";
+
+										if (data.records[i].fields.Status == "Open") {
+											btnClass = "submitted red";
+											btn_text = "Accept";
+										} else if (data.records[i].fields.Status == "Accepted") {
+											btnClass = "submitted yellow";
+											btn_text = "Complete";
+										} else {
+											btnClass = "submitted green";
+											btn_text = "Finished";
+											method_name = "";
+										}
+
+										list = list
+												+ '<li data-icon="false" style="padding:0px !important;padding-left:-5px;text-shadow:none"  class="list_tasks"><a class="list_content" style="padding-left:0px !important;color:white;" ><p style="white-space:normal"><Strong>Task Name:</strong>'
+												+ data.records[i].fields.Subject
+												+ '</p><p style="white-space:normal"><Strong>Description:</strong>'
+												+ data.records[i].fields.Description
+												+ '</p><p style="white-space:normal;text-decoration:none"><Strong>Contact No:</strong>'
+												+ data.records[i].fields.Contact_NO__c
+												+ '</p><p style="white-space:normal" class="'+btnClass+'" onclick="'+method_name+'">'
+												+ btn_text
+												+ '</p><span class="list_img" style="position:absolute;right:20px;top:40%;"><img src="images/arrow.png" width="21" height="21"></span></a></li>';
+
+									}
+
+									$("#ul_Reports").append(list);
+									$.mobile.hidePageLoadingMsg();
+								}
+								$('#ul_Reports').listview('refresh');
+
+							},
+							error : function(jqXHR, textStatus, errorThrown) {
+								//hide the loader
+								$.mobile.hidePageLoadingMsg();
+								//showing runtime error
+								navigator.notification
+										.alert("Error:" + errorThrown, null,
+												"iResponder", null);
+
+							}
+						});
+
+			}
+
+			/***
+			 *
+			 *Below method to clear ul data .
+			 */
+			function clearList() {
+
+				$("#ul_Reports").empty();
+				$('#ul_Reports').listview('refresh');
+
+			}
+
+			/**
+			*
+			*Below method will execute when user click on complete button
+			*@Param : "tastPos" This param have int value.
+			*/
+			function completeTask(taskPos) {
+                
+				//getting appropriate task details into variable to send task info to server.
+				engineerSelected_TaskObj = allTasks.records[taskPos];
+
+				var url = baseurl + "/iresponder/update.php?tid="
+						+ engineerSelected_TaskObj.Id
+						+ "&status=Completed&email="
+						+ engineerInfo.records[0].fields.Email + "&desc="
+						+ engineerSelected_TaskObj.fields.Description
+						+ "&cntc="
+						+ engineerSelected_TaskObj.fields.Contact_NO__c
+						+ "&loc=" + engineerSelected_TaskObj.fields.Lat_Long__c;
+				$.mobile.showPageLoadingMsg();
+				
+				//AJAX call implementation to complete tasks
+				var ajaxCall = $.ajax({
+					url : url,
+					dataType : 'json'
+				});
+				ajaxCall.success(function(data) {
+					if (data[0].success) {
+						$.mobile.hidePageLoadingMsg();
+						navigator.notification.alert("Task Completed", null,
+								"iResponder", null);
+						setTimeout("myIssues()", 100);
+
+					} else {
+						navigator.notification.alert(
+								"Unable to perform your request", null,
+								"iResponder", null);
+					}
+					$.mobile.hidePageLoadingMsg();
+				});
+
+				ajaxCall.error(function(jqXHR, textStatus, errorThrown) {
+					navigator.notification.alert("Error:" + errorThrown, null,
+							"iResponder", null);
+					$.mobile.hidePageLoadingMsg();
+				});
+
+			}
+			/**
+			*
+			*Below method will execute when user click on accept button
+			*@Param : "tastPos" This param have int value.
+			*/
+			function acceptTask(taskPos) {
+				engineerSelected_TaskObj = allTasks.records[taskPos];
+
+				var url = baseurl + "/iresponder/update.php?tid="
+						+ engineerSelected_TaskObj.Id
+						+ "&status=Accepted&email="
+						+ engineerInfo.records[0].fields.Email + "&desc="
+						+ engineerSelected_TaskObj.fields.Description
+						+ "&cntc="
+						+ engineerSelected_TaskObj.fields.Contact_NO__c
+						+ "&loc=" + engineerSelected_TaskObj.fields.Lat_Long__c;
+				$.mobile.showPageLoadingMsg();
+				var ajaxCall = $.ajax({
+					url : url,
+					dataType : 'json'
+				});
+				ajaxCall.success(function(data) {
+					if (data[0].success) {
+						$.mobile.hidePageLoadingMsg();
+						navigator.notification.alert("Task Accepted", null,
+								"iResponder", null);
+						setTimeout("loadTasks()", 100);
+
+					} else {
+						navigator.notification.alert(
+								"Unable to perform your request", null,
+								"iResponder", null);
+					}
+					$.mobile.hidePageLoadingMsg();
+				});
+
+				ajaxCall.error(function(jqXHR, textStatus, errorThrown) {
+					navigator.notification.alert("Error:" + errorThrown, null,
+							"iResponder", null);
+					$.mobile.hidePageLoadingMsg();
+				});
+				//$.mobile.changePage( "task_detais.html");
+			}
+		</script>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+/********************************************************************************
+ * Authors: Rajitha & Mahendra
+ * File Name:main.css
+ * Date: 28/05/2012
+ *
+ * 
+ * This file contains design for grids,body background
+*********************************************************************************/
+ .acsheetbtns
+                {
+                    
+                    background:#BCB7B7;
+                    font-size:18px;
+                    border: 1px solid none;
+                    -moz-border-radius: 5px;
+                    -webkit-border-radius: 5px;
+                    width:220;
+                    margin-left:2%;
+                    text-shadow:none;
+                }
+/*style for action sheet cancel button*/
+                .acsheetcancelbtn
+                {
+                    background:#424242;
+                    font-size:15px;
+                    border: 1px solid none;
+                    -moz-border-radius: 5px;
+                    -webkit-border-radius: 5px;
+                    width:220;
+                    margin-left:2%;
+                    color:white;
+                    text-shadow:none;
+                }
+
+
+ .ui-actionsheet-wallpaper { 
+	display: none;
+	background-color: black; 
+	opacity: .3;
+	position: absolute;
+	top:0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 19; /* above content underneath sheet */
+}
+.pop-up-page {
+	text-align: center;
+}
+body
+{
+width:100%;
+}
+.ui-page { max-width:100%; }
+
+.ui-actionsheet-content {
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	background-color: silver;
+	border-style: solid;
+	border-width: 3px;
+	display: none;
+	height: auto;
+	position: absolute;
+	width: 230px;
+	z-index: 20;
+	-moz-box-shadow: 0px 0px 12px rgba(0,0,0,.6);
+	-webkit-box-shadow: 0px 0px 12px rgba(0,0,0,.6);
+	box-shadow: 0px 0px 12px rgba(0,0,0,.6); 
+}
+.ui-actionsheet-commandbtn 
+{
+    }
+.ui-actionsheet-closebtn {
+	color: white;
+	background: #5E6369; /* old browsers */
+	background: -moz-linear-gradient(top, #5E6369 0%, #52575D 1%, #40454E 46%, #141D26 50%, #252F38 98%, #303339 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5E6369), color-stop(1%,#52575D), color-stop(46%,#40454E), color-stop(50%,#141D26), color-stop(98%,#252F38), color-stop(100%,#303339)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5E6369', endColorstr='#303339',GradientType=0 ); /* ie */
+	background: -o-linear-gradient(top, #5E6369 0%,#52575D 1%,#40454E 46%,#141D26 50%,#252F38 98%,#303339 100%); /* opera */
+}
+@-webkit-keyframes actionsheet-open-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes actionsheet-close-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes actionsheet-open-slideup {
+  0% {
+    -webkit-transform: translateY(1100px);
+  }
+  70% {
+    -webkit-transform: translateY(-20px);
+  }
+  100% {
+    -webkit-transform: translateY(0);
+  }
+}
+@-webkit-keyframes actionsheet-close-slideup {
+  0% {
+    -webkit-transform: translateY(0);
+  }
+  30% {
+  	-webkit-transform: translateY(-30px);
+  }
+  100% {
+  	opacity: 0;
+    -webkit-transform: translateY(300px);
+  }
+}
+
+.ui-actionsheet-animateIn {
+	-webkit-animation-name: actionsheet-open-slideup;
+	-webkit-animation-delay: 0;
+	-webkit-animation-duration: 500ms;
+}
+.ui-actionsheet-animateOut {
+	-webkit-animation-name: actionsheet-close-slideup;
+	-webkit-animation-delay: 0;
+	-webkit-animation-duration: 500ms;
+}
+
+
+body
+{
+}
+.footer-style {
+	/*background: url(../images/totalbar.png);
+    
+background-repeat:repeat-x;
+	width: 100%;*/
+	height: 49px;
+
+}
+
+.footer-group
+{
+    margin:0;
+    padding:0;
+}
+.footer_div
+{
+     margin:0;
+    padding:0;
+}
+.footer_div img
+{
+    border:0;
+  margin:0;
+    padding:0;
+}
+.footer-group ul
+{
+    list-style-type:none;
+}
+.footer-group ul li
+{
+    float:left;
+}
+ .image_footer
+        {
+        margin-top:0px!important;
+        padding-top:0px!important;
+        }
+        .header_search_style
+        {
+             height:90px; 
+          text-align:center;
+          background:url(../images/background_search.png);
+        }
+.header-style
+        {
+          height:45px; 
+          text-align:center;
+         // background:url(../images/background.png);
+         text-shadow:none;
+        }
+        #home .ui-icon
+        {
+            background: url(../images/home.png) 50% 50% no-repeat;
+            background-size: 24px 22px;
+        }
+        #search .ui-icon
+        {
+            background: url(../images/search_normal.png) 50% 50% no-repeat;
+            background-size: 24px 22px;
+        }
+        #appointments .ui-icon
+        {
+            background: url(../images/appointments_normal.png) 50% 50% no-repeat;
+            background-size: 24px 22px;
+        }
+        #favourites .ui-icon
+        {
+            background: url(../images/favourites_normal.png) 50% 50% no-repeat;
+            background-size: 24px 22px;
+        }
+        #walkin .ui-icon
+        {
+            background: url(../images/walkin_normal.png) 50% 50% no-repeat;
+            background-size: 24px 22px;
+        }
+        
+        .nav-glyphish-example .ui-btn .ui-btn-inner
+        {
+            padding-top: 40px !important;
+        }
+        .nav-glyphish-example .ui-btn .ui-icon
+        {
+            width: 30px !important;
+            height: 30px !important;
+            margin-left: -15px !important;
+            box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            -webkit-border-radius: 0 !important;
+            border-radius: 0 !important;
+        }
+        .list_image
+        {
+        
+         
+           margin-left: -6px;
+          margin-top: -5px;
+           padding-right:10px;
+           height:33px;
+        }
+        .list_div
+        {
+             padding:20px;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+             border-radius: 30px;
+        }
+        .li_list_home
+        {
+        height:50px;
+        text-shadow:none;
+        }
+                
+
+        .list_text
+        {
+          margin-left: 5px; 
+          margin-top:5px; 
+        }
+        .search
+        {    width: 110px;
+}
+        .list_anchore
+        {
+          min-height:40px!important;
+          padding: 0.7em -1px!important;
+        }
+        
+         .switch
+        {
+            width: 15%; /* height: 2px;*/
+            float: right;
+            margin-top: -40px;
+        }
+        .header_backbutton
+        {
+            margin-top: 5px;
+            margin-left: 5px;
+            width: 55px;
+            height: 28px;
+            float:left;
+        }
+        .header_rightbutton
+        {
+           margin-bottom: 0;
+            width: 55px;
+            height: 28px;
+            float: right;
+        }
+        .header_text
+        {
+            text-align: center;
+            margin-bottom: 0;
+            margin-top: 10px;
+        }
+
+         .input_text
+        {
+           
+
+        }
+.form-label {
+    text-align: right;
+    padding-top: 20px;
+    width: 48% !important;
+    font-size: 14px;
+}
+
+.form-label1 {
+    text-align: right;
+    padding-top: 20px;
+    width: 48% !important;
+    font-size: 13px;
+}
+
+.input-element {
+    text-align: left;
+    padding-top: 8px;
+    width: 49% !important;
+    padding-right: 0px;
+    font-size: 13px !important;
+      border-radius: 0px !important;
+}
+
+.form-label-dummy {
+    width: 3% !important;
+}
+/*-------------------------------------------------*/
+/*
+
+
+
+/*-------------------------------------------------*/
+/*design for alphabets list wich will display on vendors list,staff list,favorites list etc.*/
+/*********************************************************************************/
+ #list-navigation {
+                        color:#fff;
+                        list-style:none;
+                        position:absolute;
+                        right:10px;
+                        top:0px;
+                        z-index:200;
+                        font-size:10px;
+                        
+                    }                      
+/****************************************************************************/

@@ -1,0 +1,138 @@
+/*************************************************************
+ * Authors: Rajitha,Mahendra
+ * File Name:Location.js
+ * Date: 26/01/2012
+ *
+ * 
+ * This file contains location services logic .
+ **************************************************************/
+
+/*************************************************************
+*get_location()
+*-This returns the location information.
+*************************************************************/
+
+function get_default_location()
+{
+    if (Modernizr.geolocation) 
+    {
+        navigator.geolocation.getCurrentPosition(show_map);
+    }
+    else 
+    {
+        //Nothing happen.
+    }
+}
+
+/*************************************************************
+*show_map()
+*-This returns the longitude & latitude information based on
+*the position returned by get_location().
+*************************************************************/
+
+function show_map(position) 
+{
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    code_lat_lng(latitude,longitude)
+}
+
+/*************************************************************
+*code_lat_lng()
+*-This returns the location details based on the details 
+*returned from show_map() .
+*************************************************************/
+function code_lat_lng(latitude,longitude) 
+{
+    var lat0 = latitude;
+    var lng0 = longitude;
+    var lat = parseFloat(lat0);
+    var lng = parseFloat(lng0);
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'latLng': latlng}, function(results, status) 
+    {
+        if (status == google.maps.GeocoderStatus.OK)
+        {
+            if (results[4]) 
+            {
+                var city = results[4].formatted_address;
+                city = city.substring(0,city.indexOf(","));
+                check_cookie(city);
+            } 
+            else 
+            {
+                //Nothing happen
+            }
+        } 
+        else 
+        {
+            alert("Geocoder failed due to: " + status);
+        }
+    });
+}
+
+/*************************************************************
+*setCookie()
+*-This function sets the cookie.
+*************************************************************/
+function set_cookie(c_name,value,exdays)
+{
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value = escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+    document.cookie = c_name + "=" + c_value;
+}
+
+/*************************************************************
+*get_cookie()
+*-This function reads the cookie.
+*************************************************************/
+function get_cookie(c_name)
+{
+    var i,x,y,ARRcookies=document.cookie.split(";");
+    for (i = 0;i < ARRcookies.length;i++)
+    {
+        x = ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+        y = ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+        x = x.replace(/^\s+|\s+$/g,"");
+        if (x == c_name)
+        {
+            return unescape(y);
+        }
+    }
+}
+
+/*************************************************************
+*check_cookie()
+*-This function checks whethet the cookie is set & sets if not.
+*************************************************************/
+function check_cookie(location)
+{
+    if(document.getElementById("inner_location"))
+    {
+        document.getElementById('display_loader').innerHTML = "<img src='"+base_url+"images/small-loader.gif'>" ;
+    }
+
+    var city = get_cookie("location_traced");
+    if (city !=null && city !="")
+    {
+        //Nothing happen
+    }
+    else 
+    {
+        set_cookie("location_traced",location,365);
+    }
+	
+    if(document.getElementById("inner_location"))
+    {
+        document.getElementById('display_loader').innerHTML = "<img src='"+base_url+"images/small-loader.gif'>" ;
+        city = get_cookie("location_traced");
+        display_vendors(city);
+    }
+}
+
+
+
+
+

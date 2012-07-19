@@ -1,0 +1,46 @@
+/*************************************************************
+ * Authors: Rajitha,Mahendra
+ * File Name:calendarPlugin.js
+ * Date: 26/01/2012
+ *
+ * 
+ * This file contains logic for create event on iphone calendar and we call the native methods.
+ **************************************************************/ 
+
+function calendarPlugin()
+{
+};
+
+
+calendarPlugin.prototype.createEvent = function(title,location,notes,startDate,endDate,frequency) {
+    PhoneGap.exec(null, null, "calendarPlugin", "createEvent", [title,location,notes,startDate,endDate,frequency]);
+};
+
+//calendarPlugin.prototype.modifyEvent = function(title,location,notes,startDate,endDate) {
+//    PhoneGap.exec(null, null, "calendarPlugin", "modifyEvent", [title,location,notes,startDate,endDate]);
+//};
+
+
+//calendarPlugin.prototype.deleteEvent = function(title,location,notes,startDate,endDate) {
+//    PhoneGap.exec(null, null, "calendarPlugin", "deleteEvent", [title,location,notes,startDate,endDate]);
+//};
+
+
+//calendarPlugin.prototype.findEvent = function(title,location,notes,startDate,endDate) {
+//    PhoneGap.exec(null, null, "calendarPlugin", "findEvent", [title,location,notes,startDate,endDate]);
+//};
+
+
+
+calendarPlugin.install = function()
+{
+    if(!window.plugins)
+    {
+        window.plugins = {};
+    }
+    
+    window.plugins.calendarPlugin = new calendarPlugin();
+    return window.plugins.calendarPlugin;
+};
+
+PhoneGap.addConstructor(calendarPlugin.install);

@@ -1,0 +1,197 @@
+<!--*************************************************************
+ * Authors: Rajitha & Bhaskar
+ * File Name:index.html
+ * Date: 13/07/2012
+ *
+ * 
+ * This page for troubleshooter login
+ *************************************************************-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Engineer login</title>
+<!--head starting-->
+<head>
+<!--title declaration-->
+<title>iResponder</title>
+<!-- meta tags for mobile app width fixing  -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="initial-scale=1.0" />
+<meta name="viewport" content="maximum-scale=1.0" />
+<meta name="viewport" content="user-scalable=no" />
+<meta name="viewport" content="width=device-width" />
+
+<!--  Jquery mobile css and js -->
+<link href="css/jquery.mobile-1.0a3.min.css" rel="stylesheet"
+	type="text/css" />
+
+<script src="js/jquery-1.5.min.js" type="text/javascript"></script>
+<script src="js/jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+
+<!-- Custom css -->
+<link href="css/custom.css" rel="stylesheet" type="text/css" />
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+
+<!-- Custom js -->
+<script src="js/main.js" type="text/javascript"></script>
+
+<!-- other files -->
+<script src="js/phonegap-1.4.1.js" type="text/javascript"></script>
+<script src="js/childbrowser.js" type="text/javascript"></script>
+<script src="js/facebook.js" type="text/javascript"></script>
+</head>
+<body>
+
+	<!-- Page section start -->
+	<div data-role="page" id="page_engineer_login" data-theme="none">
+
+		<!-- CSS for body background -->
+		<style>
+			body {
+				background: url(images/bg.jpg) !important;
+			}
+			
+			.ui-page {
+				background: url(images/bg.jpg);
+			}
+			
+			.ui-content {
+				background: url(images/bg.jpg);
+			}
+			</style>
+
+		<!-- Header Section start -->
+		<div data-role="header" class="header-style">
+			<img src="images/back_btn.png" onclick="back();" class="ui-btn-left" />
+			<h1>
+				<img src="images/logo.png" width="110" height="20">
+			</h1>
+		</div>
+
+
+       <!-- Content Section -->
+		<div data-role="content" class="padding_elements">
+			<h3 style="text-align: center; color: white; font-family: helvetica;">Trobleshooter
+				Login</h3>
+			<p>
+				<label class="div_label_text">Username</label><br> <input
+					type="text" id="Username" value="" />
+			</p>
+
+			<p>
+				<label class="div_label_text">Password</label><br> <input
+					type="password" id="password" value="" />
+			</p>
+			<p>
+			<p>
+			<div class="login-btn div_label_text" onclick="report_Submit();">
+				Login</div>
+		</div>
+
+		<script>
+		
+		   /**
+		   *
+		   *Below method will call when user tap on header "back" button it navigates to index page.
+		   *@params None
+		   *
+		   */
+			function back() {
+				$.mobile.changePage("index.html", {
+					transition : "none",
+					reverse : false,
+					changeHash : false
+				});
+			}
+            
+		   //Below variables to hold username and password
+			var Username, password;
+
+			$("#page_engineer_login").bind('pageshow', function(event, ui) {
+				$("#Username").val("");
+				$("#password").val("");
+			});
+
+			/**
+			 *
+			 *Below method to validate Engineer info 
+			 * this method will return "true" if valid info else returs "false".
+			 */
+			function validateEngineer() {
+				isValidInfo = false;
+				Username = $("#Username").val();
+				password = $("#password").val();
+				if (Username == "")
+					navigator.notification.alert("Please Enter email", null,
+							"iResponder", null);
+				else if (password == "")
+					navigator.notification.alert("Please Enter Password", null,
+							"iResponder", null);
+				else
+					isValidInfo = true;
+				return isValidInfo;
+
+			}
+
+			/**
+			 *Below Method to perform engineer authentication 
+			 *
+			 */
+			function report_Submit() {
+				/**
+				 *
+				 *Checking user entered credentials or not.
+				 */
+				if (validateEngineer()) {
+
+					$.mobile.showPageLoadingMsg();
+					
+					//Preparing url
+					var submiturl = baseurl + "/iresponder/search.php?email="
+							+ Username + "&pass=" + password;
+					
+					//Ajax call implementation
+					$.ajax({
+						url : submiturl,
+						dataType : 'json',
+						success : function(data) {
+							
+							/**
+							*
+							*If invalid user below "if" block will execute else it navigates user list of issues page.
+							*/
+							if (data.size == 0 || data == 0 || data == null)
+								navigator.notification.alert(
+										"Invalid User name or Password", null,
+										"iResponder", null);
+							else {
+								engineerInfoObj = data;
+								$.mobile.changePage(
+										"engineersTasksListview.html", {
+											transition : "none",
+											reverse : false,
+											changeHash : false
+										});
+							}
+							$.mobile.hidePageLoadingMsg();
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							//Handling error at runtime.
+							navigator.notification.alert(
+									"Error:" + errorThrown, null, "iResponder",
+									null);
+							$.mobile.hidePageLoadingMsg();
+
+						}
+					});
+				}
+			}
+		</script>
+
+	</div>
+</body>
+</html>

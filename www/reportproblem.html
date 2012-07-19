@@ -1,0 +1,158 @@
+
+<!--*************************************************************
+ * Authors: Rajitha & Bhaskar
+ * File Name:reportproblem.html
+ * Date: 13/07/2012
+ *
+ * 
+ * This file contains logic for create a problem/task for user.
+ *************************************************************-->
+<!DOCTYPE html >
+<!--html starting-->
+<html>
+    <!--head starting-->
+    <head>
+        <!--title declaration-->
+        <title>Report Problem</title>
+        
+    </head>
+    <!-- head ending -->
+    <!-- body starting -->
+    <body>
+        <!-- Page Declaration -->
+        
+        <div data-role="page" id="reportaproblem_page" >
+            <!--Custom CSS-->
+            <style>
+                body {
+                    background: url(images/bg.jpg);
+                    background-repeat:repeat-y;
+                    background-position:center center;
+                    background-attachment:scroll;
+                    background-size:100% 100%;
+                }
+                .ui-page {
+                    background: url(images/bg.jpg);
+                }
+                .ui-content{
+                    background: url(images/bg.jpg);
+                }
+                </style>
+            
+            <!-- header declaration-->
+            <div data-role="header" class="header-style">
+                <h1><img src="images/logo.png" width="110" height="20" ></h1>
+                <img src="images/signout.png" class="ui-btn-right" onclick="fbLogOut();"  />
+            </div>
+            
+            <!--End of  header declaration -->
+            
+            <!-- Content Starting -->
+            <div data-role="content" class="padding_elements">
+                <p>
+                <label style="color:white;">Problem Subject</label><br>
+                <input type="text" id="subject"/>
+                </p>
+                <p>
+                <label style="color:white;">Description</label><br>
+                <textarea name="" cols="" rows="" id="discription"></textarea>
+                </p>
+                <p style="color:white;">
+                <label>Phone</label><br>
+                <input type="tel"  data-theme="c" value="" id="phone" maxlength="10"/>
+                
+                </p>
+                    <p><span><img src="images/submit_btn.png" width="111" height="47" onclick="report_Submit()" id="report_submit"></span></p>
+                
+            </div>
+            <!-- Content Ending -->
+            
+            <!--Custom Java Script -->
+            <script type="text/javascript">
+                var isClicked=false;
+                //submit button action implements here
+                function report_Submit()
+                {
+                    var discription=document.getElementById('discription').value;
+                    var phone=document.getElementById('phone').value;
+                    var subject=document.getElementById('subject').value;
+                    var leadid=sessionStorage.getItem("leadid");
+                    //validations 
+                    if(subject=="")
+                    {
+                        navigator.notification.alert("Please Enter Subject Name", null, "iResponder", null);
+                    }
+                    else if(discription=="")
+                    {
+                         navigator.notification.alert("Please Enter Discription", null, "iResponder", null);
+                    }else if(phone=="")
+                    {
+                        navigator.notification.alert("Please Enter Phonenumber", null, "iResponder", null);
+                    }else 
+                    {
+                        if(!isClicked)
+                        {
+                            $('#report_submit').addClass('ui-disabled');
+                            isClicked=true;
+                        
+                        //show the loader           
+                        $.mobile.showPageLoadingMsg();
+                       
+                        var submiturl=baseurl+"/iresponder/createview.php?leadid="+leadid+"&desc="+discription+"&phone="+phone+"&latlong=&subject="+subject;
+                            console.log(submiturl);
+                            //ajax calling for craete a task for user
+                        $.ajax({
+                               
+                               url:submiturl,dataType: 'json',
+                               success: function(data)
+                               {
+                               //hide the loader
+                               $.mobile.hidePageLoadingMsg();
+                               navigator.notification.alert("Thanks for letting us know!", null, "iResponder", null);
+                               //redirect to usertaskslist page if success
+                               $.mobile.changePage("usertaskslist.html", {
+                                                   transition: "none",
+                                                   reverse: false,
+                                                   changeHash: false
+                                                   });
+                               },
+                               //error handling
+                               error:function (jqXHR, textStatus, errorThrown){
+                               //hide the loader
+                               $.mobile.hidePageLoadingMsg();
+                               navigator.notification.alert("Error:"+errorThrown, null, "iResponder", null);
+                               }
+                               });//ajax
+                        }//if(!isClicked)
+                    }//else
+                    
+                }//report_Submit()
+                
+                
+                //when page appears what will be done will implements here
+                $("#reportaproblem_page").bind('pageshow', function (event, ui) {
+                                               
+                                                    
+                                                  }); 
+                  //View Problems action implements here                               
+                function viewProblems()
+                {
+                    $.mobile.changePage("usertaskslist.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                }
+                </script> 
+            <!-- end of custom JS-->
+            <!--Footer Declaration-->
+            <!-- Footer Section -->
+            <div data-role="footer" data-position="fixed" style="text-align: center;">
+               
+                    <span  style="font-size:15px !important;text-shadow:none;color:black;">Report Problem &nbsp;|</span>  &nbsp;
+                    <span  onclick="viewProblems()" style="font-size:15px !important;text-shadow:none;color:black;">View Problems </span>
+            </div>
+            <!--Footer End-->
+        </div><!--Page End-->
+    </body><!--Body End-->
+</html><!--Html End-->

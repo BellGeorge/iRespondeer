@@ -1,0 +1,109 @@
+/*************************************************************
+ * Authors: Rajitha,Mahendra
+ * File Name:imageSwipe.js
+ * Date: 26/01/2012
+ *
+ * 
+ * This file contains logic for swiping images in home page.
+ **************************************************************/
+$(function(){
+  // SWIPE LEFT EVENT
+  // Triggers when a swipe event occurred moving in the left direction.
+  // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
+  // A standard 'swipe' can be used to trigger event regardless of direction
+  
+  $("#swipeimage").bind('swipeleft',function(event, ui){
+                        var imgPath=document.getElementById('swipeimage').src;
+                        var img=imgPath.substr(imgPath.lastIndexOf('/')+1);
+                        if(img=='add1.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add3.png";
+                        }
+                        else if(img=='add2.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add1.png";
+                        }
+                        else if(img=='add3.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add2.png";
+                        }
+
+                  })
+  // SWIPE RIGHT EVENT
+  // Triggers when a swipe event occurred moving in the right direction.
+  $("#swipeimage").bind('swiperight',function(event, ui){
+                        var imgPath=document.getElementById('swipeimage').src;
+                        var img=imgPath.substr(imgPath.lastIndexOf('/')+1);
+                        if(img=='add1.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add2.png";
+                        }
+                        else if(img=='add2.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add3.png";
+                        }
+                        else if(img=='add3.png')
+                        {
+                        
+                        document.getElementById('swipeimage').src ="images/add1.png";
+                        }
+                 
+                        })
+
+  })
+// SWIPE LEFT EVENT
+// Triggers when a swipe event occurred moving in the left direction.
+// Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
+// A standard 'swipe' can be used to trigger event regardless of direction
+
+function swipeImageLeft()
+{
+    var imgPath=document.getElementById('swipeimage').src;
+    var img=imgPath.substr(imgPath.lastIndexOf('/')+1);
+    if(img=='add1.png')
+    {
+        
+       document.getElementById('swipeimage').src ="images/add3.png";
+    }
+    else if(img=='add2.png')
+    {
+        
+        document.getElementById('swipeimage').src ="images/add1.png";
+    }
+    else if(img=='add3.png')
+    {
+        
+        document.getElementById('swipeimage').src ="images/add2.png";
+    }
+    
+    
+    
+}
+// SWIPE RIGHT EVENT
+// Triggers when a swipe event occurred moving in the right direction.
+function swipeImageRight()
+{
+    var imgPath=document.getElementById('swipeimage').src;
+    var img=imgPath.substr(imgPath.lastIndexOf('/')+1);
+    if(img=='add1.png')
+    {
+        
+        document.getElementById('swipeimage').src ="images/add2.png";
+    }
+    else if(img=='add2.png')
+    {
+        
+        document.getElementById('swipeimage').src ="images/add3.png";
+    }
+    else if(img=='add3.png')
+    {
+        
+        document.getElementById('swipeimage').src ="images/add1.png";
+    }
+ 
+}

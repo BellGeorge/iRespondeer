@@ -1,0 +1,31 @@
+/********************************************************************************
+* Authors: Rajitha & Bhaskar
+* File Name: main.css
+* Date: 13/07/2012
+*
+* 
+* 
+*********************************************************************************/
+.header-style
+{
+background-image:url('../images/headerbg.png');
+height:40px !important;
+}
+.footer-style
+{
+background-image:url('../images/headerbg.png');
+}
+.div_label_text
+{
+color:white;font-family:helvetica;font-size:15px !important;
+}
+.list_tasks{
+background:#36393E !important;
+border-top:none !important;
+border-bottom: 1px solid #606466 !important;
+}
+.padding_elements
+{
+padding-left:2%;
+padding-right:2%;
+}

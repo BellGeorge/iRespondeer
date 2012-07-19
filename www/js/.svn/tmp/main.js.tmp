@@ -1,0 +1,764 @@
+/*************************************************************
+ * Authors: Rajitha&Mahendra
+ * File Name:main.js
+ * Date: 26/01/2012
+ *
+ * 
+ * This file contains logic for main methods which we are used in project.
+ **************************************************************/
+
+
+//for dev side
+var baseURL = "http://122.169.249.250:8097"; 
+<<<<<<< .mine
+var version="Dev 1.028";
+=======
+//var baseURL="http://172.16.26.117"
+var version="Dev 1.028";
+>>>>>>> .r1194
+
+//for Production side(Live)
+//var baseURL = "http://staging.chimpped.com";
+//var version="v1.007";
+
+/*facebook integration*/
+var client_id = "312789135440462";//appid
+var redir_url = "https://www.facebook.com/connect/login_success.html";//redirect url
+//alert("ndhg");
+//var networkState = navigator.network.connection.type;
+//alert("bnvjkldhgl"+networkState);
+//console.log("bnklghjghj"+networkState);
+//
+////var networkState = (navigator.network.connection.type != Connection.NONE);
+////if(networkState)
+////{
+////    alert(networkState); 
+////}else
+////{
+////    alert("Yes");
+////}
+
+//Ajax Error Handling
+function customErrorAjax(jqXHR, textStatus, errorThrown){
+    var errorMsg="";
+    if (jqXHR.status == 0) {
+        errorMsg="Please check you network connection";
+    } 
+    else if (jqXHR.status == 404) {
+        errorMsg="Requested page not found. [404]"
+    } 
+    else if (jqXHR.status == 500) {
+        errorMsg="Internal Server Error [500]";
+    } 
+    else if (errorThrown =='parsererror') {
+        errorMsg="Requested JSON parse failed";
+    } 
+    else if (errorThrown == 'timeout') {
+        errorMsg="Time out error";
+    } 
+    else if (errorThrown =='abort') {
+        errorMsg="Ajax request aborted";
+    } 
+    else {
+        navigator.notification.alert("Uncaught Error", null, "Chimpped", null);
+        errorMsg="Uncaught Error";
+    }
+    return errorMsg;
+}
+//More Information li clicked action implements here
+function moreInformation()
+{
+    var description=sessionStorage.getItem('company_description');
+    navigator.notification.alert(description, null, "Chimpped", null);
+}
+//facebook login functionality implements here(profile.html)
+function facebookLogin()
+{
+    var fb = FBConnect.install();
+    fb.connect(client_id,redir_url,"touch");
+    fb.onConnect = onFBConnected;
+    
+}
+// Triggers when user logged in successfully with fb.
+function onFBConnected()
+{
+    $.mobile.showPageLoadingMsg();
+    
+    //create request for retrive logged in user details
+    var req = window.plugins.fbConnect.getMe();
+    req.onload = checkfacebookid1;
+    
+}
+
+//facebook logout functionality implements here(home.html)
+function Logout(){ 
+    var fb=FBConnect.install();
+    fb.Logout();
+    
+}
+//Rating and Reviews li clicked functionality implements here
+function reviews()
+{
+    //show the loader           
+    $.mobile.showPageLoadingMsg();
+    var phoneNumber=sessionStorage.getItem('company_phone_num');
+    //ajax calling for open yelp ratings and reviews
+    console.log('http://api.yelp.com/phone_search?phone='+phoneNumber+'&ywsid=QY10hGc_HNo6XVDoVzFlCA');
+    $.ajax({
+           url:'http://api.yelp.com/phone_search?phone='+phoneNumber+'&ywsid=QY10hGc_HNo6XVDoVzFlCA',dataType: 'json',
+           
+           success: function(data)
+           {
+           console.log(data.message.text);
+           if(data.message.text=='Invalid phone number')
+           {
+           
+           navigator.notification.alert("No Reviews Available", null, "Chimpped", null);
+           $.mobile.hidePageLoadingMsg();
+           }
+           //if the company does not provide any catogories
+           else if(data.message.text!='Exceeded max daily requests')
+           {
+           if(data==0||data==null||data.businesses.length==0)
+           {
+           
+           navigator.notification.alert("No Reviews Available", null, "Chimpped", null);
+           $.mobile.hidePageLoadingMsg();
+           }
+           else
+           {
+           $.mobile.hidePageLoadingMsg();
+           sessionStorage.setItem('review_url_yelp',data.businesses[0].mobile_url);
+           console.log(data.businesses[0].mobile_url);
+           var reviewsOnYelp = FBConnect.install(); 
+           reviewsOnYelp.reviewsConnect();
+           }//else if(data.message.text!='Exceeded max daily requests')
+           }
+           else
+           {
+           
+           navigator.notification.alert("Exceeded max daily requests", null, "Chimpped", null);
+           $.mobile.hidePageLoadingMsg();
+           }//else
+           
+           },//success
+           error:function (jqXHR, textStatus, errorThrown){
+           var errorMsg=customErrorAjax(jqXHR, textStatus, errorThrown);
+           navigator.notification.alert(errorMsg, null, "Chimpped", null);
+           $.mobile.hidePageLoadingMsg();
+           }//error
+           });//ajax
+    
+    
+    
+    
+}//reviews()
+
+//checking fb email id is already exists or not
+function checkfacebookid1(evt) {
+    $.mobile.showPageLoadingMsg();
+    
+    var response = JSON.parse(evt.target.responseText);
+    // var checkfb = checkfacebookid1(response.email, response.first_name, response.last_name, response.gender);
+    var logindata= "/user_controller/check_status_facebook?email="+response.email;
+    //create request and send to server for check whether the fb email id is already exists or not
+    var req = $.ajax({
+                     url: baseURL + logindata,
+                     dataType: "text",
+                     timeout: 10000
+                     
+                     });
+    //if fb email id is not exists then we will take user to chimpped registraion page
+    req.success(function (data) {
+                if (data == 0) {
+                $.mobile.hidePageLoadingMsg();
+                var details = response.first_name + ":" + response.last_name + ":" + response.email + ":" + response.gender;
+                sessionStorage.setItem('newUser', details);
+                
+                $.mobile.changePage("registration.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                
+                }
+                //if fb emial id is not activated 
+                else if (data == -1) {
+                $.mobile.hidePageLoadingMsg();
+                navigator.notification.alert("We don't recognize you or you haven't activated your account yet!", null, "Chimpped", null);
+                
+                }
+                //if existed user then we will take user to home(dashboard)page.
+                else {
+                var details = 0;
+                
+                sessionStorage.setItem('userName', response.first_name);
+                sessionStorage.setItem('userEmail', response.email);
+                sessionStorage.setItem('newUser', details);
+                
+                var splitArray = data.split(":");
+                sessionStorage.setItem('userId',splitArray[0].trim());
+                //if existed user came (from booking_summary page) then we will take user to booking_summary page.
+                if(sessionStorage.getItem('logincheck')=='booknow')
+                {
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("booking_summary.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                 //if existed user (from instructor_detail page) then we will take user to children_summary page.
+                else if(sessionStorage.getItem('logincheck')=='instructor_detail')
+                {
+                $.mobile.changePage("children_summary.html", {
+                                    transition: "none",
+                                    reverse: true,
+                                    changeHash: false
+                                    }); 
+                }
+                //if existed user (from children_selecttime page) then we will take user to children_summary page.
+                else if(sessionStorage.getItem('logincheck')=='children_selecttime')
+                {
+                $.mobile.changePage("children_summary.html", {
+                                    transition: "none",
+                                    reverse: true,
+                                    changeHash: false
+                                    }); 
+                }
+                 //if existed user (from appointments page) then we will take user to newappointments page.
+                else if(sessionStorage.getItem('logincheck')=='bookings')
+                {
+                
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("newappointments.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                 //if existed user (from appointments page) then we will take user to previousBookings page.
+                else if(sessionStorage.getItem('logincheck')=='PreviousBookings')
+                {
+                
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("previousBookings.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                 //if existed user (from favorites page) then we will take user to favorites page.
+                else if(sessionStorage.getItem('logincheck')=='favorites')
+                {
+                
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("favorites.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                 //if existed user (from reservationcompleteratrest page) then we will take user to reservationcompleteratrest page.
+                else if(sessionStorage.getItem('logincheck')=='completereservation')
+                {
+                
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("reservationcompleteratrest.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                //if existed user then we will take user to home(dashboard)page.
+                else
+                {
+                $.mobile.hidePageLoadingMsg();
+                $.mobile.changePage("index.html", {
+                                    transition: "none",
+                                    reverse: false,
+                                    changeHash: false
+                                    });
+                }
+                
+                }//outer else
+                });//success
+    req.error(function (jqXHR, textStatus, errorThrown) {
+              var errorMsg=customErrorAjax(jqXHR, textStatus, errorThrown);
+              navigator.notification.alert(errorMsg, null, "Chimpped", null);
+              $.mobile.hidePageLoadingMsg();
+              });
+    
+    
+    
+}
+
+/*facebook integartion end*/
+//back btn functionality implements here.
+function back() {
+    window.history.back();
+    
+}
+
+
+//forgot password btn functonality implements here.(profile.html)
+function forgotPassword() {
+    $.mobile.changePage("forgetpassword.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        });
+    
+    
+}
+
+//signin btn functionality implements here
+function login() {
+     $.mobile.changePage("index.html", {
+     transition: "none",
+     reverse: false,
+     changeHash: false
+     });       
+   
+}
+//signin btn functionality implements here  (profile.html) 
+function login_button() {
+    $.mobile.showPageLoadingMsg();
+    
+    var username = document.getElementById('txtUserid').value;
+    var password = document.getElementById('txtPsw').value;
+    
+    var validEmailObj = /(\d\d\d)-\d\d\d\d\d\d\d\d/;
+    var validEmailExp = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+    
+    if(username=="") {
+        
+        navigator.notification.alert("Enter Email Address", null, "Chimpped", null);
+        $.mobile.hidePageLoadingMsg();
+        $('#txtUserid').focus();
+        
+    }
+    else if (validEmailExp.test(username) == false) {
+        navigator.notification.alert("Invalid Email Address", null, "Chimpped", null);
+        $.mobile.hidePageLoadingMsg();
+        $('#txtUserid').focus();
+       
+    }
+    else if(password=="") {
+        navigator.notification.alert("Enter Password", null, "Chimpped", null);
+        $.mobile.hidePageLoadingMsg();
+        $('#txtPsw').focus();
+       
+    }
+    
+    else{
+        var logindata = "/index.php/user_controller/check_user?email=" + username + "&password=" + password + "&access_type=mobile";
+        //ajax calling for login with chimpped
+        var req = $.ajax({
+                         url: baseURL + logindata,
+                         dataType: "text",
+                         timeout: 10000
+                         
+                         });
+        req.success(function (data) {
+                  
+                    console.log(data);
+                   
+                    if (data == 0) {
+                    
+                    document.getElementById('txtUserid').value = "";
+                    document.getElementById('txtPsw').value = "";
+                    $.mobile.hidePageLoadingMsg();
+                    navigator.notification.alert("We don't recognize you or you haven't activated your account yet!", null, "Chimpped", null);
+                  
+                    }
+                    //if email id is not activated 
+                    else if (data == -1) {
+                    document.getElementById('txtUserid').value = "";
+                    document.getElementById('txtPsw').value = "";
+                    $.mobile.hidePageLoadingMsg();
+                    navigator.notification.alert("Please go to your email registered with us and click on the related link to activate your account. If you do not have that email, please email us at support@chimpped.com for assistance.", null, "Chimpped", null);
+                    // $('#txtUserid').focus();
+                    }else if(data==3)
+                    {
+                    $.mobile.changePage("changepassword.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    
+                    }
+                    else {
+                    var splitArray = data.split(":");
+                   
+                    sessionStorage.setItem('userName', splitArray[1]);
+                   
+                    sessionStorage.setItem('userEmail', username);
+                    sessionStorage.setItem('userId', $.trim(splitArray[0]));
+                  
+                    $.mobile.hidePageLoadingMsg();
+                    //if existed user (from booking_summary page) then we will take user to booking_summary page.
+                    if(sessionStorage.getItem('logincheck')=='booknow')
+                    {
+                    $.mobile.changePage("booking_summary.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    }
+                     //if existed user (from instructor_detail page) then we will take user to children_summary page.
+                    else if(sessionStorage.getItem('logincheck')=='instructor_detail')
+                    {
+                    $.mobile.changePage("children_summary.html", {
+                                        transition: "none",
+                                        reverse: true,
+                                        changeHash: false
+                                        }); 
+                    }
+                     //if existed user (from children_selecttime page) then we will take user to children_summary page.
+                    else if(sessionStorage.getItem('logincheck')=='children_selecttime')
+                    {
+                    $.mobile.changePage("children_summary.html", {
+                                        transition: "none",
+                                        reverse: true,
+                                        changeHash: false
+                                        }); 
+                    }
+                     //if existed user (from appointments page) then we will take user to newappointments page.
+                   else if(sessionStorage.getItem('logincheck')=='bookings')
+                    {
+                    
+                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.changePage("newappointments.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    } //if existed user (from appointments page) then we will take user to previousBookings page.
+                    else if(sessionStorage.getItem('logincheck')=='PreviousBookings')
+                    {
+                    // sessionStorage.setItem('logincheck','PreviousBookings')
+                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.changePage("previousBookings.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    }
+                     //if existed user (from favorites page) then we will take user to favorites page.
+                    else if(sessionStorage.getItem('logincheck')=='favorites')
+                    {
+                    
+                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.changePage("favorites.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    } 
+                    //if existed user (from reservationcompleteratrest page) then we will take user to reservationcompleteratrest page.
+                    else if(sessionStorage.getItem('logincheck')=='completereservation')
+                    {
+                    
+                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.changePage("reservationcompleteratrest.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    }
+                     //if existed user  then we will take user him to dashboard page.
+                    else
+                    {
+                    $.mobile.changePage("index.html", {
+                                        transition: "none",
+                                        reverse: false,
+                                        changeHash: false
+                                        });
+                    }
+                    
+                    }//outer else
+                    
+                    });//success
+        //if internet connection is not Reachable
+        req.error(function (jqXHR, textStatus, errorThrown) {
+                  var errorMsg=customErrorAjax(jqXHR, textStatus, errorThrown);
+                  navigator.notification.alert(errorMsg, null, "Chimpped", null);
+                  $.mobile.hidePageLoadingMsg();
+                  });
+    }
+}
+
+function loginpageloading() {
+    $.mobile.changePage("index.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); 
+}
+
+function registrationloading() {
+    
+    var query = window.location.search.substring(1);
+    
+    if (query == "") {
+        
+    } else {
+        var splitArray = query.split(":");
+        
+        document.getElementById('firstname').value = splitArray[0];
+        document.getElementById('lastname').value = splitArray[1];
+        document.getElementById('email').value = splitArray[2];
+        if (splitArray[3]=="male")
+            document.getElementById('radio-choice-1').checked = "checked";
+        if(splitArray[3]=="female")
+       document.getElementById('radio-choice-2').checked = "checked";
+        
+    }       
+}
+function checkfacebookid(email,firstname, lastname,gender) {
+    var logindata= "/index.php/user_controller/check_status?email="+email;
+    
+    var req = $.ajax({
+                     url: baseURL + logindata,
+                     dataType: "text",
+                     timeout: 10000
+                     
+                     });
+                req.success(function (data) {
+                if (data == 0) {
+                
+                
+                var details = firstname + ":" + lastname + ":" + email + ":" + gender;
+                sessionStorage.setItem('newUser', details);
+                
+                window.location="registration.html";
+                
+                }
+                else if (data == -1) {
+                
+                window.location="profile.html";
+                }
+                else {
+                var details = 0;
+                sessionStorage.setItem('userName', firstname);
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('newUser', details);
+                window.location="index.html"; 
+                }
+                
+                            });
+    req.error(function (jqXHR, textStatus, errorThrown) {
+              var errorMsg=customErrorAjax(jqXHR, textStatus, errorThrown);
+              navigator.notification.alert(errorMsg, null, "Chimpped", null);
+              $.mobile.hidePageLoadingMsg();
+              });
+    
+    
+}
+
+
+
+function profilepageloading() {
+    var username = sessionStorage.getItem('userName');
+    if (username != null) {
+        document.getElementById('sign_out').style.visibility = 'visible';
+        
+        document.getElementById('profile_username').value = sessionStorage.getItem('userEmail');
+        document.getElementById('facebook_div').style.visibility = 'hidden';
+        
+        
+    }
+    else {
+        document.getElementById('sign_out').style.visibility = 'hidden';
+        document.getElementById('facebook_div').style.visibility = 'visible';
+    }
+}
+//back btn functionality implements here(treatments.html)
+function treatment_back()
+{
+    $.mobile.changePage("companydetails.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        });
+}
+
+
+
+function homepageloading() {
+    
+    var username = sessionStorage.getItem('userName');
+    if (username != null) {
+        
+        document.getElementById('login').innerHTML = "Welcome " + username;
+        document.getElementById('signout').style.visibility = 'visible';
+          document.getElementById('setting_icon').style.visibility = 'visible';
+        
+    } else {
+        
+        document.getElementById('signout').style.visibility = 'hidden';
+        document.getElementById('setting_icon').style.visibility = 'hidden';
+    }
+    var query = window.location.search.substring(1);
+   
+}
+
+function delayer() {
+    $.mobile.changePage("index.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); }
+function indexpageloading() {
+    
+    setTimeout('delayer()', 2000)
+    
+  
+}
+
+//Create Account li clicked functionality implements here(profile.html)
+
+//Footer Home btn functionality implements here
+function getHome() {
+    $.mobile.changePage("index.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        });
+ 
+}
+//Footer Search btn functionality implements here
+function getSearch() {
+    $.mobile.changePage("browsecategories.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); 
+                        }
+//Footer Bookings btn functionality implements here
+function getAppointments() {
+    $.mobile.changePage("appointments.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        });  
+}
+//Footer Favourites btn functionality implements here
+function getFavourites() {
+    var userId=sessionStorage.getItem('userId');
+    //if the user not logged in
+    if(userId==null)
+    {
+        navigator.notification.confirm(
+                                       'Please Sign In with Chimpped!',  // message
+                                       onConfirmClick,              // callback to invoke with index of button pressed
+                                       'Chimpped',            // title
+                                       'Cancel,Ok'          // buttonLabels
+                                       );
+    }else
+    {
+        $.mobile.changePage("favorites.html", {
+                            transition: "none",
+                            reverse: false,
+                            changeHash: false
+                            }); 
+    }
+    
+    
+    
+}
+
+
+function onConfirmClick(index) {
+    //if user clicked on Ok btn
+    if(index==2)
+    {
+        sessionStorage.setItem('logincheck','favorites');
+        $.mobile.changePage("profile.html", {
+                            transition: "none",
+                            reverse: true,
+                            changeHash: false
+                            });  
+    }
+}
+
+
+//Footer WalkIn btn functionality implements here
+function getWalkin() {
+    $.mobile.changePage("walkin.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        });
+  
+}
+
+//Browse Catogories li clicked functionality implements here(browsecategories.html)
+function categories() {
+    sessionStorage.setItem('back_browsecat','search');
+    $.mobile.changePage("browsecategories.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); 
+    
+}
+
+//Spa Names li clicked functionality implements here(searchcompany.html)
+function companydetails(){
+    $.mobile.changePage("companydetails.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); 
+}
+//morephotos li clicked functionality implements here(companydetails.html)
+function morephotos() {
+    sessionStorage.setItem('morephotosback','cmpnydetails');
+    $.mobile.changePage("morephotos.html", {
+                        transition: "none",
+                        reverse: false,
+                        changeHash: false
+                        }); 
+}
+//back btn function implements here(morephotos.html)
+function morePhotos_back()
+{
+    var mrback=sessionStorage.getItem('morephotosback');
+    
+    if(mrback=='restdetails')
+    {
+        $.mobile.changePage("restaurantdetails.html", {
+                            transition: "none",
+                            reverse: false,
+                            changeHash: false
+                            });
+    }
+    else  if(mrback=='cmpnydetails')
+    {
+        $.mobile.changePage("companydetails.html", {
+                            transition: "none",
+                            reverse: false,
+                            changeHash: false
+                            });
+    }
+    else  if(mrback=='childrendetails')
+    {
+            $.mobile.changePage("childrenactivitydetails.html", {
+                                transition: "none",
+                                reverse: false,
+                                changeHash: false
+                                });
+            
+    }
+    }
+    
+    //treatments li clicked functionality implements here(companydetails.html)
+    function treatments() {
+        $.mobile.changePage("categorys.html", {
+                            transition: "none",
+                            reverse: false,
+                            changeHash: false
+                            });
+    }
